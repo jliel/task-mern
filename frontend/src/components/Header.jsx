@@ -4,13 +4,13 @@ import { useSelector, useDispatch} from 'react-redux'
 import { logout, reset } from '../features/auth/authSlice'
 
 const Header = () => {
-    const navigate = useNavigate
-    const dispatch = useDispatch
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
     const { user } = useSelector(state => state.auth)
 
     const logoutFn = () => {
-        dispatch(logout)
-        dispatch(reset)
+        dispatch(logout())
+        dispatch(reset())
         navigate('/')
     }
     return (
