@@ -5,6 +5,7 @@ const User = require('../models/userModel');
 const getTasks = asyncHandler(async (req, res) => {
     //res.status(200).json({message: 'Get all tasks'});
     const tasks = await Task.find({ user: req.user.id });
+    console.log("getting tasks")
     res.status(200).json(tasks);
 });
 
@@ -44,7 +45,7 @@ const updateTask = asyncHandler(async (req, res) => {
 });
 
 const deleteTask = asyncHandler(async (req, res) => {
-    const task = Task.findById(req.params.id);
+    const task = await Task.findById(req.params.id);
     if(!task) {
         res.status(400);
         throw new Error('task not found');
@@ -54,6 +55,7 @@ const deleteTask = asyncHandler(async (req, res) => {
         res.status(401);
         throw new Error('No such user found.');
     }
+    console.log("task:", task.text)
     if(task.user.toString() !== user.id) {
         res.status(401);
         throw new Error('User is not authorized to delete.')
