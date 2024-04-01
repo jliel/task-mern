@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createTask } from "../features/tasks/taskSlice"
+import { useNavigate } from "react-router-dom";
 
 const TaskForm = () => {
     const [text, setText] = useState('');
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const onSubmit  = (e) => {
         e.preventDefault()
         dispatch(createTask({ text }))
         setText('')
+        navigate('/alltasks')
     }
 
     return (

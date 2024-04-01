@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import taskService from './taskService'
 
 const initialState = {
@@ -18,7 +18,34 @@ export const createTask = createAsyncThunk(
         } catch (error) {
             const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
             return thunkAPI.rejectWithValue(message)
-            
+
+        }
+    }
+)
+
+export const getTasks = createAsyncThunk(
+    'tasks/getAll',
+    async (_, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token
+            return await taskService.getTasks(token)
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    }
+)
+
+export const deleteTask = createAsyncThunk(
+    'tasks/delete',
+    async (id, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token
+            console.log("deleting" + id)
+            return await taskService.deleteTask(id, token)
+        } catch (error) {
+            const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+            return thunkAPI.rejectWithValue(message)
         }
     }
 )
@@ -40,6 +67,32 @@ export const taskSlice = createSlice({
                 state.tasks.push(action.payload)
             })
             .addCase(createTask.rejected, (state, action) => {
+                state.isSuccess = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(getTasks.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getTasks.fulfilled, (state, action) => {
+                state.isSuccess = true
+                state.isLoading = false
+                state.tasks = action.payload
+            })
+            .addCase(getTasks.rejected, (state, action) => {
+                state.isSuccess = false
+                state.isError = true
+                state.message = action.payload
+            })
+            .addCase(deleteTask.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deleteTask.fulfilled, (state, action) => {
+                state.isSuccess = true
+                state.isLoading = false
+                state.tasks = state.tasks.filter(task => task._id !== action.payload.id)
+            })
+            .addCase(deleteTask.rejected, (state, action) => {
                 state.isSuccess = false
                 state.isError = true
                 state.message = action.payload
